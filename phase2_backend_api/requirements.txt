@@ -21,6 +21,9 @@ python-dotenv>=1.0.0
 # CORS Support
 python-multipart>=0.0.6
 
+# HTTP Requests (for dataset downloading)
+requests>=2.31.0
+
 # Optional: For local LLM support
 # transformers>=4.35.0
 # torch>=2.1.0
