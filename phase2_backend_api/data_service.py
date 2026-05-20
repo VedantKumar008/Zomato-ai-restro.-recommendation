@@ -7,6 +7,7 @@ Handles data access and filtering logic
 import pandas as pd
 import logging
 import traceback
+import os
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 import json
@@ -27,34 +28,53 @@ class DataService:
     
     def load_data(self):
         """Load processed data from CSV"""
+        logger.info(f"=== load_data called ===")
+        logger.info(f"Current working directory: {os.getcwd()}")
+        logger.info(f"Data path: {self.data_path}")
+        
         try:
-            if self.data_path and Path(self.data_path).exists():
-                logger.info(f"Loading data from {self.data_path}")
-                self.df = pd.read_csv(self.data_path)
-                self.is_loaded = True
-                logger.info(f"Data loaded successfully: {len(self.df)} records")
+            if self.data_path:
+                data_file_path = Path(self.data_path)
+                logger.info(f"Absolute path: {data_file_path.absolute()}")
+                logger.info(f"File exists: {data_file_path.exists()}")
+                
+                if data_file_path.exists():
+                    logger.info(f"Loading data from {self.data_path}")
+                    self.df = pd.read_csv(self.data_path)
+                    self.is_loaded = True
+                    logger.info(f"Data loaded successfully: {len(self.df)} records")
+                    logger.info(f"DataFrame columns: {list(self.df.columns)}")
+                else:
+                    logger.warning(f"Data file not found at {self.data_path}")
+                    logger.warning(f"Absolute path checked: {data_file_path.absolute()}")
+                    self.df = pd.DataFrame()
+                    self.is_loaded = False
             else:
-                logger.warning(f"Data file not found at {self.data_path}")
+                logger.warning("No data path provided")
                 self.df = pd.DataFrame()
                 self.is_loaded = False
         except FileNotFoundError as e:
             logger.error(f"File not found error loading data: {e}")
             logger.error(f"Full traceback:\n{traceback.format_exc()}")
+            traceback.print_exc()
             self.df = pd.DataFrame()
             self.is_loaded = False
         except pd.errors.EmptyDataError as e:
             logger.error(f"Empty data file error: {e}")
             logger.error(f"Full traceback:\n{traceback.format_exc()}")
+            traceback.print_exc()
             self.df = pd.DataFrame()
             self.is_loaded = False
         except pd.errors.ParserError as e:
             logger.error(f"CSV parsing error: {e}")
             logger.error(f"Full traceback:\n{traceback.format_exc()}")
+            traceback.print_exc()
             self.df = pd.DataFrame()
             self.is_loaded = False
         except Exception as e:
             logger.error(f"Error loading data: {e}")
             logger.error(f"Full traceback:\n{traceback.format_exc()}")
+            traceback.print_exc()
             self.df = pd.DataFrame()
             self.is_loaded = False
     

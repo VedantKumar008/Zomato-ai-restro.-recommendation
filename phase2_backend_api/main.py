@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
 import traceback
+import os
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -114,8 +115,23 @@ async def health_check():
 @app.get("/locations", response_model=LocationResponse)
 async def get_locations():
     """Get all available cities/locations"""
+    # Log debugging information
+    logger.info(f"=== /locations endpoint called ===")
+    logger.info(f"Current working directory: {os.getcwd()}")
+    logger.info(f"Data service exists: {data_service is not None}")
+    if data_service:
+        logger.info(f"Data service is_loaded: {data_service.is_loaded}")
+        logger.info(f"Data service data_path: {data_service.data_path}")
+        if data_service.data_path:
+            logger.info(f"CSV file exists: {Path(data_service.data_path).exists()}")
+    
     if not data_service or not data_service.is_loaded:
-        raise HTTPException(status_code=503, detail="Data service not available")
+        error_msg = "Data service not available"
+        logger.error(error_msg)
+        logger.error(f"data_service is None: {data_service is None}")
+        logger.error(f"data_service.is_loaded: {data_service.is_loaded if data_service else 'N/A'}")
+        traceback.print_exc()
+        raise HTTPException(status_code=503, detail=error_msg)
     
     try:
         locations = data_service.get_available_locations()
@@ -123,14 +139,30 @@ async def get_locations():
     except Exception as e:
         logger.error(f"Error fetching locations: {e}")
         logger.error(f"Full traceback:\n{traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=str(e))
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
 @app.get("/cuisines", response_model=CuisineResponse)
 async def get_cuisines():
     """Get all available cuisines"""
+    # Log debugging information
+    logger.info(f"=== /cuisines endpoint called ===")
+    logger.info(f"Current working directory: {os.getcwd()}")
+    logger.info(f"Data service exists: {data_service is not None}")
+    if data_service:
+        logger.info(f"Data service is_loaded: {data_service.is_loaded}")
+        logger.info(f"Data service data_path: {data_service.data_path}")
+        if data_service.data_path:
+            logger.info(f"CSV file exists: {Path(data_service.data_path).exists()}")
+    
     if not data_service or not data_service.is_loaded:
-        raise HTTPException(status_code=503, detail="Data service not available")
+        error_msg = "Data service not available"
+        logger.error(error_msg)
+        logger.error(f"data_service is None: {data_service is None}")
+        logger.error(f"data_service.is_loaded: {data_service.is_loaded if data_service else 'N/A'}")
+        traceback.print_exc()
+        raise HTTPException(status_code=503, detail=error_msg)
     
     try:
         cuisines = data_service.get_available_cuisines()
@@ -138,7 +170,8 @@ async def get_cuisines():
     except Exception as e:
         logger.error(f"Error fetching cuisines: {e}")
         logger.error(f"Full traceback:\n{traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=str(e))
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
 @app.post("/recommend", response_model=RecommendationResponse)
