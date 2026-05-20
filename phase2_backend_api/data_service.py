@@ -27,7 +27,7 @@ class DataService:
             self.load_data()
     
     def load_data(self):
-        """Load processed data from CSV"""
+        """Load processed data from CSV or compressed file"""
         logger.info(f"=== load_data called ===")
         logger.info(f"Current working directory: {os.getcwd()}")
         logger.info(f"Data path: {self.data_path}")
@@ -40,7 +40,21 @@ class DataService:
                 
                 if data_file_path.exists():
                     logger.info(f"Loading data from {self.data_path}")
-                    self.df = pd.read_csv(self.data_path)
+                    
+                    # Detect compression type from file extension
+                    compression = None
+                    if data_file_path.suffix == '.zip':
+                        compression = 'zip'
+                        logger.info("Detected ZIP compression, using pandas compression support")
+                    elif data_file_path.suffix == '.gz':
+                        compression = 'gzip'
+                        logger.info("Detected GZIP compression, using pandas compression support")
+                    elif data_file_path.suffix == '.csv':
+                        compression = None
+                        logger.info("Loading uncompressed CSV file")
+                    
+                    # Load data with appropriate compression
+                    self.df = pd.read_csv(self.data_path, compression=compression)
                     self.is_loaded = True
                     logger.info(f"Data loaded successfully: {len(self.df)} records")
                     logger.info(f"DataFrame columns: {list(self.df.columns)}")

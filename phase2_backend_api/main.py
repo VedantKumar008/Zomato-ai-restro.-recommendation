@@ -54,7 +54,8 @@ async def lifespan(app: FastAPI):
         # Get the directory where this script is located
         script_dir = Path(__file__).parent
         # Navigate to the processed data file relative to the script
-        data_path = script_dir.parent / 'phase1_data_layer' / 'processed_data' / 'zomato_restaurants_processed.csv'
+        # Use compressed .zip file for deployment (under GitHub 100MB limit)
+        data_path = script_dir.parent / 'phase1_data_layer' / 'processed_data' / 'zomato_restaurants_processed.zip'
         
         logger.info(f"Resolved data path: {data_path}")
         logger.info(f"Absolute data path: {data_path.absolute()}")
