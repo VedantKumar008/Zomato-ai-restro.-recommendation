@@ -7,7 +7,7 @@ import { Select } from './ui/select';
 import { Slider } from './ui/slider';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
-import { apiService } from '@/lib/api';
+import { apiService } from '../lib/api';
 
 interface RecommendationFormProps {
   onSubmit: (data: any) => void;

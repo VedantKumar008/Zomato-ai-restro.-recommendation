@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { RecommendationForm } from '@/components/RecommendationForm';
-import { ResultsDisplay } from '@/components/ResultsDisplay';
-import { apiService } from '@/lib/api';
+import { RecommendationForm } from '../components/RecommendationForm';
+import { ResultsDisplay } from '../components/ResultsDisplay';
+import { apiService } from '../lib/api';
 import { Utensils, Sparkles } from 'lucide-react';
 
 export default function Home() {
