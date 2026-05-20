@@ -45,16 +45,29 @@ async def lifespan(app: FastAPI):
     
     # Startup
     logger.info("Starting up application...")
+    logger.info(f"Current working directory: {os.getcwd()}")
+    logger.info(f"Script location: {__file__}")
+    
     try:
-        # Initialize data service
-        data_path = Path('../phase1_data_layer/processed_data/zomato_restaurants_processed.csv')
+        # Initialize data service with robust absolute path
+        # Get the directory where this script is located
+        script_dir = Path(__file__).parent
+        # Navigate to the processed data file relative to the script
+        data_path = script_dir.parent / 'phase1_data_layer' / 'processed_data' / 'zomato_restaurants_processed.csv'
+        
+        logger.info(f"Resolved data path: {data_path}")
+        logger.info(f"Absolute data path: {data_path.absolute()}")
+        logger.info(f"Data file exists: {data_path.exists()}")
+        
         if not data_path.exists():
-            logger.warning(f"Processed data not found at {data_path}")
-            logger.warning("Please run Phase 1 preprocessing first")
+            logger.error(f"Processed data not found at {data_path.absolute()}")
+            logger.error(f"Checked path: {data_path}")
+            logger.error("Please run Phase 1 preprocessing first")
             data_service = DataService()
         else:
-            data_service = DataService(data_path=str(data_path))
-            logger.info("Data service initialized successfully")
+            logger.info(f"Loading data from: {data_path.absolute()}")
+            data_service = DataService(data_path=str(data_path.absolute()))
+            logger.info(f"Data service initialized successfully, is_loaded: {data_service.is_loaded}")
         
         # Initialize recommendation service
         recommendation_service = RecommendationService(data_service=data_service)

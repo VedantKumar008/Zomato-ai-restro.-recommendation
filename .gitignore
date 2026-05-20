@@ -131,6 +131,7 @@ htmlcov/
 !package-lock.json
 !jsconfig.json
 !tsconfig.json
+!phase1_data_layer/processed_data/zomato_restaurants_processed.csv
 
 # Keep processed data but ignore raw downloads
 phase1_data_layer/raw_data/
