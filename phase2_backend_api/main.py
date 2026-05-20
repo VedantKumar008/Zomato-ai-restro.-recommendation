@@ -10,6 +10,7 @@ from contextlib import asynccontextmanager
 import logging
 import traceback
 import os
+import requests
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -60,10 +61,41 @@ async def lifespan(app: FastAPI):
         logger.info(f"Data file exists: {data_path.exists()}")
         
         if not data_path.exists():
-            logger.error(f"Processed data not found at {data_path.absolute()}")
-            logger.error(f"Checked path: {data_path}")
-            logger.error("Please run Phase 1 preprocessing first")
-            data_service = DataService()
+            logger.warning(f"Processed data not found at {data_path.absolute()}")
+            logger.warning(f"Checked path: {data_path}")
+            
+            # Try to download from external URL if provided (for Render deployment)
+            dataset_url = os.getenv("DATASET_URL")
+            if dataset_url:
+                logger.info(f"Attempting to download dataset from: {dataset_url}")
+                try:
+                    # Ensure the directory exists
+                    data_path.parent.mkdir(parents=True, exist_ok=True)
+                    
+                    logger.info(f"Downloading dataset (this may take a while for large files)...")
+                    response = requests.get(dataset_url, stream=True)
+                    response.raise_for_status()
+                    
+                    with open(data_path, 'wb') as f:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            if chunk:
+                                f.write(chunk)
+                    
+                    logger.info(f"Dataset downloaded successfully to: {data_path.absolute()}")
+                except Exception as download_error:
+                    logger.error(f"Failed to download dataset: {download_error}")
+                    logger.error(f"Download error traceback: {traceback.format_exc()}")
+                    logger.error("DATASET_URL environment variable may be invalid or inaccessible")
+            
+            # If still not available, try to use sample data
+            if not data_path.exists():
+                logger.warning("Dataset file still not available after download attempt")
+                logger.warning("Initializing data service without dataset (endpoints will return empty data)")
+                data_service = DataService()
+            else:
+                logger.info(f"Loading data from: {data_path.absolute()}")
+                data_service = DataService(data_path=str(data_path.absolute()))
+                logger.info(f"Data service initialized successfully, is_loaded: {data_service.is_loaded}")
         else:
             logger.info(f"Loading data from: {data_path.absolute()}")
             data_service = DataService(data_path=str(data_path.absolute()))
