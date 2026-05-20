@@ -126,6 +126,8 @@ htmlcov/
 !data_statistics.json
 !package.json
 !package-lock.json
+!jsconfig.json
+!tsconfig.json
 
 # Keep processed data but ignore raw downloads
 phase1_data_layer/raw_data/
