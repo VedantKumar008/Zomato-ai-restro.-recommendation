@@ -6,6 +6,7 @@ Handles integration with Large Language Models for recommendation generation
 
 import os
 import logging
+import traceback
 from typing import List, Dict, Any, Optional
 from abc import ABC, abstractmethod
 import json
@@ -76,6 +77,7 @@ class OpenAIProvider(LLMProvider):
             
         except Exception as e:
             logger.error(f"Error calling OpenAI API: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
             # Fallback to mock recommendations
             return self._generate_mock_recommendations(restaurants, user_preferences)
     
@@ -96,6 +98,7 @@ class OpenAIProvider(LLMProvider):
             
         except Exception as e:
             logger.error(f"Error parsing LLM response: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
             return self._generate_mock_recommendations(restaurants, {})
     
     def _generate_mock_recommendations(
@@ -213,6 +216,7 @@ class GroqProvider(LLMProvider):
         except Exception as e:
             logger.error(f"❌ Error calling Groq API: {e}")
             logger.error(f"❌ Type of error: {type(e).__name__}")
+            logger.error(f"❌ Full traceback:\n{traceback.format_exc()}")
             logger.warning("⚠️  Using FALLBACK to mock recommendations due to API error")
             # Fallback to mock recommendations
             return self._generate_mock_recommendations(restaurants, user_preferences)
@@ -253,6 +257,7 @@ class GroqProvider(LLMProvider):
             
         except Exception as e:
             logger.error(f"Error parsing LLM response: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
             return self._generate_mock_recommendations(restaurants, {})
     
     def _generate_mock_recommendations(
@@ -349,6 +354,7 @@ class AnthropicProvider(LLMProvider):
             
         except Exception as e:
             logger.error(f"Error calling Anthropic API: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
             openai_fallback = OpenAIProvider()
             return openai_fallback._generate_mock_recommendations(restaurants, user_preferences)
     
@@ -368,6 +374,7 @@ class AnthropicProvider(LLMProvider):
             
         except Exception as e:
             logger.error(f"Error parsing Anthropic response: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
             openai_fallback = OpenAIProvider()
             return openai_fallback._generate_mock_recommendations(restaurants, {})
 
@@ -411,6 +418,7 @@ class LLMService:
             return await self.provider.generate_recommendations(restaurants, user_preferences)
         except Exception as e:
             logger.error(f"Error generating recommendations: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
             # Return restaurants with basic explanations
             openai_fallback = OpenAIProvider()
             return openai_fallback._generate_mock_recommendations(restaurants, user_preferences)

@@ -6,6 +6,7 @@ Handles data access and filtering logic
 
 import pandas as pd
 import logging
+import traceback
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 import json
@@ -36,8 +37,24 @@ class DataService:
                 logger.warning(f"Data file not found at {self.data_path}")
                 self.df = pd.DataFrame()
                 self.is_loaded = False
+        except FileNotFoundError as e:
+            logger.error(f"File not found error loading data: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
+            self.df = pd.DataFrame()
+            self.is_loaded = False
+        except pd.errors.EmptyDataError as e:
+            logger.error(f"Empty data file error: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
+            self.df = pd.DataFrame()
+            self.is_loaded = False
+        except pd.errors.ParserError as e:
+            logger.error(f"CSV parsing error: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
+            self.df = pd.DataFrame()
+            self.is_loaded = False
         except Exception as e:
             logger.error(f"Error loading data: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
             self.df = pd.DataFrame()
             self.is_loaded = False
     
@@ -53,6 +70,7 @@ class DataService:
             return []
         except Exception as e:
             logger.error(f"Error getting locations: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
             return []
     
     def get_available_cuisines(self) -> List[str]:
@@ -72,6 +90,7 @@ class DataService:
             return []
         except Exception as e:
             logger.error(f"Error getting cuisines: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
             return []
     
     def filter_restaurants(
@@ -137,6 +156,7 @@ class DataService:
             
         except Exception as e:
             logger.error(f"Error filtering restaurants: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
             return pd.DataFrame()
     
     def get_restaurant_by_name(self, name: str) -> Optional[Dict[str, Any]]:
@@ -151,6 +171,7 @@ class DataService:
             return None
         except Exception as e:
             logger.error(f"Error getting restaurant by name: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
             return None
     
     def get_statistics(self) -> Dict[str, Any]:
@@ -177,6 +198,7 @@ class DataService:
             return stats
         except Exception as e:
             logger.error(f"Error getting statistics: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
             return {}
     
     def get_sample_restaurants(self, n: int = 5) -> List[Dict[str, Any]]:
@@ -189,4 +211,5 @@ class DataService:
             return sample.to_dict('records')
         except Exception as e:
             logger.error(f"Error getting sample restaurants: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
             return []

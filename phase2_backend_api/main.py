@@ -8,6 +8,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
+import traceback
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -60,6 +61,7 @@ async def lifespan(app: FastAPI):
         
     except Exception as e:
         logger.error(f"Error during startup: {e}")
+        logger.error(f"Full traceback:\n{traceback.format_exc()}")
         raise
     
     yield
@@ -120,6 +122,7 @@ async def get_locations():
         return LocationResponse(locations=locations)
     except Exception as e:
         logger.error(f"Error fetching locations: {e}")
+        logger.error(f"Full traceback:\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -134,6 +137,7 @@ async def get_cuisines():
         return CuisineResponse(cuisines=cuisines)
     except Exception as e:
         logger.error(f"Error fetching cuisines: {e}")
+        logger.error(f"Full traceback:\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -152,9 +156,11 @@ async def get_recommendations(request: RecommendationRequest):
         return recommendations
     except ValueError as e:
         logger.error(f"Validation error: {e}")
+        logger.error(f"Full traceback:\n{traceback.format_exc()}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error(f"Error generating recommendations: {e}")
+        logger.error(f"Full traceback:\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

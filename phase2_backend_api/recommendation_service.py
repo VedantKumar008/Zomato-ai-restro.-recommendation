@@ -5,6 +5,7 @@ Orchestrates data filtering and LLM-based recommendation generation
 """
 
 import logging
+import traceback
 from typing import List, Dict, Any
 from models import RecommendationRequest, RecommendationResponse, Restaurant
 
@@ -25,6 +26,7 @@ class RecommendationService:
             logger.info("✅ LLM service initialized successfully")
         except Exception as e:
             logger.warning(f"❌ Could not initialize LLM service: {e}")
+            logger.warning(f"❌ Full traceback:\n{traceback.format_exc()}")
             logger.warning("❌ Will use basic recommendations (no LLM)")
     
     async def generate_recommendations(
@@ -82,6 +84,7 @@ class RecommendationService:
                 )
         except Exception as e:
             logger.error(f"❌ Error generating LLM recommendations: {e}")
+            logger.error(f"❌ Full traceback:\n{traceback.format_exc()}")
             logger.warning("⚠️  Using basic recommendations (FALLBACK) due to error")
             # Fallback to basic recommendations
             recommendations_with_explanations = self._generate_basic_recommendations(
@@ -116,15 +119,20 @@ class RecommendationService:
     
     def _filter_restaurants(self, request: RecommendationRequest):
         """Filter restaurants using data service"""
-        if not self.data_service:
-            raise ValueError("Data service not available")
-        
-        return self.data_service.filter_restaurants(
-            location=request.location,
-            budget=request.budget,
-            cuisines=request.cuisines,
-            min_rating=request.min_rating
-        )
+        try:
+            if not self.data_service:
+                raise ValueError("Data service not available")
+            
+            return self.data_service.filter_restaurants(
+                location=request.location,
+                budget=request.budget,
+                cuisines=request.cuisines,
+                min_rating=request.min_rating
+            )
+        except Exception as e:
+            logger.error(f"Error filtering restaurants: {e}")
+            logger.error(f"Full traceback:\n{traceback.format_exc()}")
+            raise
     
     def _build_query_summary(self, request: RecommendationRequest) -> Dict[str, Any]:
         """Build a summary of the query for the response"""
