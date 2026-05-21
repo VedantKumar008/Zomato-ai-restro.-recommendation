@@ -54,15 +54,15 @@ async def lifespan(app: FastAPI):
         # Get the directory where this script is located
         script_dir = Path(__file__).parent
         # Navigate to the processed data file relative to the script
-        # Use compressed .zip file for deployment (under GitHub 100MB limit)
-        data_path = script_dir.parent / 'phase1_data_layer' / 'processed_data' / 'zomato_restaurants_processed.zip'
+        # Use memory-optimized deployment dataset for Render free-tier
+        data_path = script_dir.parent / 'phase1_data_layer' / 'processed_data' / 'zomato_restaurants_deployment.csv'
         
         logger.info(f"Resolved data path: {data_path}")
         logger.info(f"Absolute data path: {data_path.absolute()}")
         logger.info(f"Data file exists: {data_path.exists()}")
         logger.info(f"Data file extension: {data_path.suffix}")
-        if data_path.suffix == '.zip':
-            logger.info("✅ Configured to use ZIP dataset (memory-efficient for Render free tier)")
+        if data_path.suffix == '.csv':
+            logger.info("✅ Configured to use memory-optimized deployment dataset (0.95 MB for Render free tier)")
         
         if not data_path.exists():
             logger.warning(f"Processed data not found at {data_path.absolute()}")
