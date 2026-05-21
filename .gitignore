@@ -133,6 +133,7 @@ htmlcov/
 !tsconfig.json
 !phase1_data_layer/processed_data/zomato_restaurants_processed.csv
 !phase1_data_layer/processed_data/zomato_restaurants_processed.zip
+!phase1_data_layer/processed_data/zomato_restaurants_deployment.csv
 # Ignore deploy dataset (too large for GitHub - 389MB)
 phase1_data_layer/processed_data/zomato_restaurants_processed_deploy.csv
 

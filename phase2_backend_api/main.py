@@ -57,12 +57,17 @@ async def lifespan(app: FastAPI):
         # Use memory-optimized deployment dataset for Render free-tier
         data_path = script_dir.parent / 'phase1_data_layer' / 'processed_data' / 'zomato_restaurants_deployment.csv'
         
+        logger.info("=" * 60)
+        logger.info("DATASET CONFIGURATION")
+        logger.info("=" * 60)
+        logger.info(f"Expected dataset filename: zomato_restaurants_deployment.csv")
         logger.info(f"Resolved data path: {data_path}")
         logger.info(f"Absolute data path: {data_path.absolute()}")
         logger.info(f"Data file exists: {data_path.exists()}")
         logger.info(f"Data file extension: {data_path.suffix}")
         if data_path.suffix == '.csv':
             logger.info("✅ Configured to use memory-optimized deployment dataset (0.95 MB for Render free tier)")
+        logger.info("=" * 60)
         
         if not data_path.exists():
             logger.warning(f"Processed data not found at {data_path.absolute()}")
