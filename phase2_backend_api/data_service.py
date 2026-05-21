@@ -58,9 +58,16 @@ class DataService:
                     logger.info("📊 Loading data into pandas DataFrame...")
                     self.df = pd.read_csv(self.data_path, compression=compression)
                     self.is_loaded = True
-                    logger.info(f"✅ Data loaded successfully: {len(self.df)} records")
-                    logger.info(f"✅ DataFrame columns: {list(self.df.columns)}")
-                    logger.info(f"✅ Memory usage: {self.df.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB")
+                    
+                    # Enhanced startup logs for deployment monitoring
+                    logger.info("=" * 60)
+                    logger.info("✅ DATASET INITIALIZATION SUCCESSFUL")
+                    logger.info("=" * 60)
+                    logger.info(f"📁 Dataset path: {self.data_path}")
+                    logger.info(f"📊 Row count loaded: {len(self.df)} records")
+                    logger.info(f"📋 DataFrame columns: {list(self.df.columns)}")
+                    logger.info(f"💾 Memory usage: {self.df.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB")
+                    logger.info("=" * 60)
                 else:
                     logger.warning(f"Data file not found at {self.data_path}")
                     logger.warning(f"Absolute path checked: {data_file_path.absolute()}")
