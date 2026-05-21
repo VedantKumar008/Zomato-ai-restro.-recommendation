@@ -39,13 +39,14 @@ class DataService:
                 logger.info(f"File exists: {data_file_path.exists()}")
                 
                 if data_file_path.exists():
-                    logger.info(f"Loading data from {self.data_path}")
+                    logger.info(f"✅ Data file found at {self.data_path}")
                     
                     # Detect compression type from file extension
                     compression = None
                     if data_file_path.suffix == '.zip':
                         compression = 'zip'
-                        logger.info("Detected ZIP compression, using pandas compression support")
+                        logger.info("✅ Detected ZIP compression, using pandas compression support")
+                        logger.info("✅ Reading directly from ZIP without full extraction (memory-efficient)")
                     elif data_file_path.suffix == '.gz':
                         compression = 'gzip'
                         logger.info("Detected GZIP compression, using pandas compression support")
@@ -54,10 +55,12 @@ class DataService:
                         logger.info("Loading uncompressed CSV file")
                     
                     # Load data with appropriate compression
+                    logger.info("📊 Loading data into pandas DataFrame...")
                     self.df = pd.read_csv(self.data_path, compression=compression)
                     self.is_loaded = True
-                    logger.info(f"Data loaded successfully: {len(self.df)} records")
-                    logger.info(f"DataFrame columns: {list(self.df.columns)}")
+                    logger.info(f"✅ Data loaded successfully: {len(self.df)} records")
+                    logger.info(f"✅ DataFrame columns: {list(self.df.columns)}")
+                    logger.info(f"✅ Memory usage: {self.df.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB")
                 else:
                     logger.warning(f"Data file not found at {self.data_path}")
                     logger.warning(f"Absolute path checked: {data_file_path.absolute()}")

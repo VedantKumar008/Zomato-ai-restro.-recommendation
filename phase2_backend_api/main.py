@@ -60,6 +60,9 @@ async def lifespan(app: FastAPI):
         logger.info(f"Resolved data path: {data_path}")
         logger.info(f"Absolute data path: {data_path.absolute()}")
         logger.info(f"Data file exists: {data_path.exists()}")
+        logger.info(f"Data file extension: {data_path.suffix}")
+        if data_path.suffix == '.zip':
+            logger.info("✅ Configured to use ZIP dataset (memory-efficient for Render free tier)")
         
         if not data_path.exists():
             logger.warning(f"Processed data not found at {data_path.absolute()}")
@@ -169,7 +172,7 @@ async def get_locations():
         logger.info(f"Data service is_loaded: {data_service.is_loaded}")
         logger.info(f"Data service data_path: {data_service.data_path}")
         if data_service.data_path:
-            logger.info(f"CSV file exists: {Path(data_service.data_path).exists()}")
+            logger.info(f"Data file exists: {Path(data_service.data_path).exists()}")
     
     if not data_service or not data_service.is_loaded:
         error_msg = "Data service not available"
@@ -200,7 +203,7 @@ async def get_cuisines():
         logger.info(f"Data service is_loaded: {data_service.is_loaded}")
         logger.info(f"Data service data_path: {data_service.data_path}")
         if data_service.data_path:
-            logger.info(f"CSV file exists: {Path(data_service.data_path).exists()}")
+            logger.info(f"Data file exists: {Path(data_service.data_path).exists()}")
     
     if not data_service or not data_service.is_loaded:
         error_msg = "Data service not available"
